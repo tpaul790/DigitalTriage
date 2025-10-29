@@ -7,7 +7,6 @@ from kivymd.uix.slider import MDSlider
 from kivy.uix.scrollview import ScrollView
 from kivy.metrics import dp
 
-from engines.triage_ai_engine import TriageAIEngineXGB
 from engines.triage_engine import TriageEngine
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.button import MDRaisedButton
