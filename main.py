@@ -17,7 +17,6 @@ class TriageApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.engine = TriageEngine()
-        self.xgb_engine = TriageAIEngineXGB()
         self.selected_symptoms = set()
         self.severity = 5
         self.user_name = ""
@@ -164,8 +163,7 @@ class TriageApp(MDApp):
             height=dp(50),
             pos_hint={'center_x': 0.5}
         )
-        # analyze_button.bind(on_release=self.analyze_symptoms)
-        analyze_button.bind(on_release=self.analyze_symptoms_xgb)
+        analyze_button.bind(on_release=self.analyze_symptoms)
         self.main_layout.add_widget(analyze_button)
 
     def build_result_area(self):
@@ -230,35 +228,6 @@ class TriageApp(MDApp):
             self.result_label.text = output
         else:
             self.result_label.text = "[b]Unable to analyze. Please try again.[/b]"
-
-    def analyze_symptoms_xgb(self, instance):
-        self.user_name = self.name_field.text
-        self.age = int(self.age_field.text) if self.age_field.text else 0
-        self.medical_history = self.history_field.text
-
-        if not self.user_name.strip():
-            self.result_label.text = "[b][color=#ff0000]Please enter your name[/color][/b]"
-            return
-
-        if not self.selected_symptoms:
-            self.result_label.text = "[b][color=#ff0000]Please select at least one symptom[/color][/b]"
-            return
-
-        try:
-            result = self.xgb_engine.predict_disease(list(self.selected_symptoms))
-        except Exception as e:
-            self.result_label.text = f"[b]Error analyzing symptoms:[/b] {e}"
-            return
-
-        output = f"[b]{self.user_name}'s AI Assessment[/b]\n\n"
-        output += f"[b]Predicted Disease:[/b] {result['disease'].title()}\n"
-        output += f"[b]Confidence:[/b] {result['confidence']}%\n"
-
-        if result['alternatives']:
-            alt_text = ", ".join([f"{d.title()} ({c:.1f}%)" for d, c in result['alternatives']])
-            output += f"\n[b]Also Consider:[/b] {alt_text}"
-
-        self.result_label.text = output
 
 
 if __name__ == '__main__':
